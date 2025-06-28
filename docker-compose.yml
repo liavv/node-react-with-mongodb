@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: myapp_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  server:
+    build: ./server
+    container_name: myapp_server
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    depends_on:
+      - mongo
+
+  client:
+    build: ./client
+    container_name: myapp_client
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./client/.env
+    depends_on:
+      - server
+
+volumes:
+  mongo-data:
