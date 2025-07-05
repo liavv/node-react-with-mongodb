@@ -23,7 +23,7 @@ const App = () => {
 
   return (
     <div>
-      <h1>Enter Your Name pleassswsse</h1>
+      <h1>Enter Your Name please!</h1>
       <NameForm onAddName={addName} />
       <NameTable names={names} />
     </div>
