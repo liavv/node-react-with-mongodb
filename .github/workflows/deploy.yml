@@ -41,7 +41,7 @@ jobs:
     - name: Ensure destination directory exists
       run: |
         ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} \
-        "mkdir -p /home/***/node-react-with-mongodb/client/build"
+        "mkdir -p ~/node-react-with-mongodb/client/build"
     - name: Rsync build folder
       run: |
         rsync -avz --delete ./client/build/ \
