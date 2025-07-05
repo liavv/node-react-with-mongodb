@@ -41,16 +41,16 @@ jobs:
     - name: Rsync build and server files to remote
       run: |
         rsync -avz --delete \
-          ./client/build/ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/ubuntu/myapp/client/build
+          ./client/build/ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/ubuntu/node-react-with-mongodb/client/build
 
-        rsync -avz --exclude='.git*' ./server/ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/ubuntu/myapp/server
+        rsync -avz --exclude='.git*' ./server/ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/ubuntu/node-react-with-mongodb/server
 
-        rsync -avz docker-compose.yml Caddyfile ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/ubuntu/myapp/
+        rsync -avz docker-compose.yml Caddyfile ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/ubuntu/node-react-with-mongodb/
 
     - name: Run Docker Compose on Remote
       run: |
         ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
-          cd /home/ubuntu/myapp
+          cd /home/ubuntu/node-react-with-mongodb
           docker-compose pull
           docker-compose build
           docker-compose up -d
