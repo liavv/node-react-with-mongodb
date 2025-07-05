@@ -38,6 +38,10 @@ jobs:
       run: |
         mkdir -p ~/.ssh
         ssh-keyscan ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
+    - name: Ensure destination directory exists
+      run: |
+        ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} \
+        "mkdir -p /home/***/node-react-with-mongodb/client/build"
     - name: Rsync build folder
       run: |
         rsync -avz --delete ./client/build/ \
