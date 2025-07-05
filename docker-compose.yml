@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   mongo:
     image: mongo:7.0
@@ -8,6 +6,8 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - myapp_network   # הוסף!
 
   server:
     build: ./server
@@ -18,16 +18,39 @@ services:
       - ./server/.env
     depends_on:
       - mongo
+    networks:
+      - myapp_network   # הוסף!
 
-  client:
-    build: ./client
-    container_name: myapp_client
+  mongo-express:
+    image: mongo-express
     ports:
-      - "3000:3000"
-    env_file:
-      - ./client/.env
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+    networks:
+      - myapp_network   # הוסף!
+
+  caddy:
+    image: caddy:latest
+    container_name: myapp_caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./client/build:/srv/app/client/build
+      - caddy_data:/data
+      - caddy_config:/config
     depends_on:
       - server
+    networks:
+      - myapp_network   # כבר מוגדר!
 
 volumes:
   mongo-data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  myapp_network:
+    driver: bridge

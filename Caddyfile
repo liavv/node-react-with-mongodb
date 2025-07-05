@@ -1,0 +1,5 @@
+liavv.biz {
+  root * /srv/app/client/build
+  file_server
+  reverse_proxy /api/* myapp_server:5000
+}
