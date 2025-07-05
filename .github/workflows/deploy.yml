@@ -9,7 +9,9 @@ jobs:
   deploy:
     name: Build and Deploy via SSH
     runs-on: ubuntu-latest
-
+    env:
+      NODE_ENV: production
+      IMAGE_TAG: latest
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
