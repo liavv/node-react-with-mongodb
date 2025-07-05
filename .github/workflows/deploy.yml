@@ -3,7 +3,7 @@ name: Build and Deploy to Production
 on:
   push:
     branches:
-      - main  # מפעיל את ה־pipeline על כל push ל־main
+      - main  # מריץ את הפייפליין על כל push ל-main
 
 jobs:
   deploy:
@@ -17,7 +17,7 @@ jobs:
     - name: Install Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '20'   # הגרסה שאתה צריך
+        node-version: '20'
 
     - name: Install dependencies and build React app
       run: |
@@ -38,7 +38,8 @@ jobs:
       run: |
         ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
           cd /home/ubuntu/myapp
-          docker-compose pull
-          docker-compose build
-          docker-compose up -d
+          docker-compose down    # עצור והסר קונטיינרים ישנים
+          docker-compose pull    # משוך עדכונים (אם יש)
+          docker-compose build   # בנה מחדש
+          docker-compose up -d   # הפעל מחדש
         EOF
