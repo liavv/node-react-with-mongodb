@@ -3,51 +3,49 @@ name: Build and Deploy to Production
 on:
   push:
     branches:
-      - main  # מריץ את הפייפליין על כל push ל-main
+      - main
 
 jobs:
-  deploy:
-    name: Build and Deploy via SSH
+  build-and-deploy:
+    name: Build React and Deploy via SSH
     runs-on: ubuntu-latest
-    env:
-      NODE_ENV: production
-      IMAGE_TAG: latest
+
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - name: Checkout Repository
+      uses: actions/checkout@v3
 
-      - name: Debug folder
-        run: |
-          ls -la
-          cd client
-          ls -la
-          npm run
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
 
-      - name: Install dependencies
-        run: |
-          cd client
-          npm install
+    - name: Install Client Dependencies
+      working-directory: ./client
+      run: npm ci
 
-      - name: Build React
-        run: |
-          cd client
-          npm run build
+    - name: Build React App
+      working-directory: ./client
+      run: npm run build
 
-      - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Setup SSH key
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Copy files to server
-        run: |
-          rsync -avz --exclude '.git*' ./ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/ubuntu/myapp
+    - name: Rsync build and server files to remote
+      run: |
+        rsync -avz --delete \
+          ./client/build/ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/ubuntu/myapp/client/build
 
-      - name: Run docker-compose on server
-        run: |
-          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
-            cd /home/ubuntu/myapp
-            docker-compose down    # עצור והסר קונטיינרים ישנים
-            docker-compose pull    # משוך עדכונים (אם יש)
-            docker-compose build   # בנה מחדש
-            docker-compose up -d   # הפעל מחדש
-          EOF
+        rsync -avz --exclude='.git*' ./server/ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/ubuntu/myapp/server
+
+        rsync -avz docker-compose.yml Caddyfile ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/ubuntu/myapp/
+
+    - name: Run Docker Compose on Remote
+      run: |
+        ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+          cd /home/ubuntu/myapp
+          docker-compose pull
+          docker-compose build
+          docker-compose up -d
+        EOF
