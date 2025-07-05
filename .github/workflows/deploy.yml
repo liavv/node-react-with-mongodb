@@ -13,19 +13,25 @@ jobs:
       NODE_ENV: production
       IMAGE_TAG: latest
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
+      - name: Debug folder
+        run: |
+          ls -la
+          cd client
+          ls -la
+          npm run
 
-    - name: Install dependencies and build React app
-      run: |
-        cd client
-        npm install
-        npm run build
+      - name: Install dependencies
+        run: |
+          cd client
+          npm install
+
+      - name: Build React
+        run: |
+          cd client
+          npm run build
 
     - name: Set up SSH key
       uses: webfactory/ssh-agent@v0.9.0
