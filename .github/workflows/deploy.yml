@@ -59,7 +59,7 @@ jobs:
       run: |
         ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
           cd /home/ubuntu/node-react-with-mongodb
-          docker-compose pull
-          docker-compose build
-          docker-compose up -d
+          sudo docker-compose pull
+          sudo docker-compose build
+          sudo docker-compose up -d
         EOF
