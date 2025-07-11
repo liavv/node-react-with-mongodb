@@ -8,7 +8,7 @@ const App = () => {
 
   const fetchNames = async () => {
     console.log('Fetching names from API...', process.env.REACT_APP_API_URL) ;
-    const res = await axios.get(`${process.env.REACT_APP_API_URL}/all`);
+    const res = await axios.get(`/api/names/all`);
     setNames(res.data);
   };
 
@@ -17,7 +17,7 @@ const App = () => {
   }, []);
 
   const addName = async (name) => {
-    await axios.post(`${process.env.REACT_APP_API_URL}/add`, { name });
+    await axios.post(`/api/names/add`, { name });
     fetchNames();
   };
 
