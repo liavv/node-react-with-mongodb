@@ -13,6 +13,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/names', require('./routes/nameRoutes'));
+app.use('/api/warranties', require('./routes/warrantyRoutes.js'));
 
 const PORT = process.env.PORT || 5000;
 
